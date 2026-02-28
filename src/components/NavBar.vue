@@ -1,6 +1,6 @@
 <template>
   <header class="bg-white shadow font-roboto">
-    <div class="mx-auto flex h-16 max-w-[1400px] items-center gap-8 px-4 sm:px-6 lg:px-8 dark:bg-gray-900 dark:text-white">
+    <div class="mx-auto flex h-16 items-center gap-8 px-4 sm:px-6 lg:px-8 dark:bg-gray-800 dark:text-white">
       <router-link class="block text-teal-600" to="/">
         <span class="sr-only">Home</span>
         <svg class="h-8" viewBox="0 0 28 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -52,8 +52,8 @@
             <li v-for="link in navLinks" :key="link.name">
               <router-link
                 :to="link.path"
-                class="relative transition hover:text-gray-500/75 font-bold dark:bg-gray-900 dark:text-white"
-                active-class="text-teal-600 font-semibold bg-teal-200 px-2 py-1 rounded-xl"
+                class="relative transition hover:text-gray-500/75 font-bold  dark:text-white"
+                active-class="text-teal-600 dark:text-teal-600  dark:bg-teal-900 font-semibold bg-teal-200 px-2 py-1 rounded-xl"
               >
                 {{ $t(`nav.${link.name}`) }}
                 <span
@@ -70,15 +70,10 @@
         <!-- Auth Buttons -->
 
         <div class="flex items-center gap-4">
-          <div class="p-6">
-          <button @click="toggleDark()" class="p-2 rounded-lg bg-gray-200 dark:bg-gray-800">
-            <i :class="isDark ? 'ri-moon-line' : 'ri-sun-line'"></i>
-          </button>
-        </div>
           <TestButton
             v-if="locale === 'km'"
             type="primary"
-            class="bg-blue-500"
+            class="bg-blue-500 px-4 py-2 text-sm font-medium hover:bg-blue-600"
             @click="changeLanguage('en')"
           >
             EN
@@ -87,7 +82,7 @@
           <TestButton
             v-if="locale === 'en'"
             type="primary"
-            class="bg-blue-500"
+            class="bg-blue-500 px-4 py-2 text-sm font-medium hover:bg-blue-600"
             @click="changeLanguage('km')"
           >
             KH
@@ -97,18 +92,28 @@
           <button @click="$i18n.locale = 'km'">KM</button> -->
           <router-link
             v-if="!auth.isLoggedIn"
-            class="rounded-md bg-teal-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-teal-700"
+            class="rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium  text-white transition hover:bg-teal-700"
             to="/login"
           >
             Login
           </router-link>
           <router-link
             v-if="auth.isLoggedIn"
-            class="rounded-md bg-red-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-teal-700"
+            class="rounded-lg bg-red-500 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-700"
             to="/login"
           >
             <button @click="handleLogout">Logout</button>
           </router-link>
+         <div class="flex items-center gap-2">
+          <i :class="isDark ? 'ri-moon-line' : 'ri-sun-line'"></i>
+
+          <input
+            type="checkbox"
+            class="toggle toggle-primary"
+            :checked="isDark"
+            @change="toggleDark()"
+          />
+        </div>
         </div>
       </div>
     </div>
@@ -121,6 +126,9 @@ import { useCartStore } from '@/stores/cart'
 import { useAuthStore } from '@/stores/auth'
 import { useI18n } from 'vue-i18n'
 import { useDark, useToggle } from '@vueuse/core'
+
+
+
 const isDark = useDark()
 
 // 2. Create a toggle function

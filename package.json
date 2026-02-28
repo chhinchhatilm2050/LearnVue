@@ -28,6 +28,7 @@
     "@tailwindcss/typography": "^0.5.19",
     "@vitejs/plugin-vue": "^6.0.3",
     "autoprefixer": "^10.4.24",
+    "daisyui": "^5.5.19",
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-oxlint": "~1.42.0",
