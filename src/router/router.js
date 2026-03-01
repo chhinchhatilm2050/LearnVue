@@ -1,23 +1,23 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomePage from '@/views/HomePage.vue'
-import AboutPage from '@/views/AboutPage.vue'
-import PostList from '@/views/PostList.vue'
-import ProductsView from '@/views/ProductsView.vue'
-import ProductDetailView from '@/views/ProductDetailView.vue'
-import BlogView from '@/views/BlogView.vue'
-import BlogPostView from '@/views/BlogPostView.vue'
-import ShopView from '@/views/ShopView.vue'
-import LoginView from '@/views/LoginView.vue'
-import UnauthorizedView from '@/views/UnauthorizedView.vue'
-import DashboardLayout from '@/layouts/DashboardLayout.vue'
-import OverviewView from '@/views/dashboard/OverviewView.vue'
-import UsersView from '@/views/dashboard/UsersView.vue'
-import NotFount from '@/views/NotFount.vue'
-import ViewShop from '@/views/pinia/ViewShop.vue'
-import CartView from '@/views/pinia/CartView.vue'
-import SittingPage from '@/views/dashboard/SittingPage.vue'
-import ProductPage from '@/views/dashboard/ProductPage.vue'
-import BlogViewState from '@/views/BlogViewState.vue'
+const HomePage = () => import ('@/views/HomePage.vue');
+const AboutPage = () => import('@/views/AboutPage.vue')
+const PostList = () => import('@/views/PostList.vue')
+const ProductsView = () => import('@/views/ProductsView.vue')
+const ProductDetailView = () => import('@/views/ProductDetailView.vue')
+const BlogView = () => import('@/views/BlogView.vue')
+const BlogPostView = () => import('@/views/BlogPostView.vue')
+const ShopView = () => import('@/views/ShopView.vue')
+const LoginView = () => import('@/views/LoginView.vue')
+const UnauthorizedView = () => import('@/views/UnauthorizedView.vue')
+const DashboardLayout = () => import('@/layouts/DashboardLayout.vue')
+const OverviewView = () => import('@/views/dashboard/OverviewView.vue')
+const UsersView = () => import('@/views/dashboard/UsersView.vue')
+const NotFount = () => import('@/views/NotFount.vue')
+const ViewShop = () => import('@/views/pinia/ViewShop.vue')
+const CartView = () => import('@/views/pinia/CartView.vue')
+const SittingPage = () => import('@/views/dashboard/SittingPage.vue')
+const ProductPage = () => import('@/views/dashboard/ProductPage.vue')
+const BlogViewState = () => import('@/views/BlogViewState.vue')
 import { useAuthStore } from '@/stores/auth'
 import MovieSearch from '@/views/MovieSearch.vue'
 import FormPost from '@/views/FormPost.vue'
