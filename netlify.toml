@@ -1,7 +1,6 @@
 [build]
-  base = "FIRST-VUE"
   command = "npm run build"
-  publish = "FIRST-VUE/dist"
+  publish = "dist"
 
 [[redirects]]
   from = "/*"
