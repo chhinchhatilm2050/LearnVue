@@ -83,7 +83,7 @@
             @click="showComments(post)"
             class="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition">
             <span class="text-xl">💬</span>
-            <span>{{ post.comments.length }}</span>
+            <span>{{post.comments?.length || 0}}</span>
           </button>
         </div>
 
@@ -235,6 +235,7 @@ const createPost = () => {
 }
 
 const addComment = (postId) => {
+  debugger;
   if(commentText.value.trim()) {
     posts.addComment(postId, commentText.value);
     commentText.value = '';

@@ -52,7 +52,7 @@
             <li v-for="link in navLinks" :key="link.name">
               <router-link
                 :to="link.path"
-                class="relative transition hover:text-gray-500/75 font-bold  dark:text-white"
+                class="relative text-gray-500 transition hover:text-gray-500/75 font-bold  dark:text-white"
                 active-class="text-teal-600 dark:text-teal-600  dark:bg-teal-900 font-semibold bg-teal-200 px-2 py-1 rounded-xl"
               >
                 {{ $t(`nav.${link.name}`) }}
@@ -87,9 +87,6 @@
           >
             KH
           </TestButton>
-          <!-- <TestButton type="danger">KH</TestButton> -->
-          <!-- <button class="rounded-md bg-teal-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-teal-700" @click="$i18n.locale = 'en'">EN</button>
-          <button @click="$i18n.locale = 'km'">KM</button> -->
           <router-link
             v-if="!auth.isLoggedIn"
             class="rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium  text-white transition hover:bg-teal-700"
@@ -104,16 +101,12 @@
           >
             <button @click="handleLogout">Logout</button>
           </router-link>
-         <div class="flex items-center gap-2">
-          <i :class="isDark ? 'ri-moon-line' : 'ri-sun-line'"></i>
-
-          <input
-            type="checkbox"
-            class="toggle toggle-primary"
-            :checked="isDark"
-            @change="toggleDark()"
-          />
-        </div>
+          <button
+            class="w-8 h-8 bg-gray-400 rounded-3xl hover:bg-gray-500 transition-colors"
+            @click="toggleDark()"
+          >
+            <i :class="isDark ? 'ri-moon-line' : 'ri-sun-line'" class=" text-white"></i>
+          </button>
         </div>
       </div>
     </div>

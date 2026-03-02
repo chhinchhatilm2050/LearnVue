@@ -1,52 +1,40 @@
 import { defineStore } from 'pinia'
+import { ref } from 'vue'
+export const useUIStore = defineStore('ui', () => {
+  const notifications = ref([]);
+  const isCreateModalOpen = ref(false);
 
-export const useUIStore = defineStore('ui', {
-  state: () => ({
-    notifications: [],
-    isCreateModalOpen: false,
-    isSidebarOpen: false,
-    theme: 'light'
-  }),
-
-  actions: {
-    showNotification(message, type = 'info') {
-      const notification = {
-        id: Date.now(),
-        message,
-        type
-      }
-
-      this.notifications.push(notification)
-
-      setTimeout(() => {
-        this.removeNotification(notification.id)
-      }, 3000)
-    },
-
-    removeNotification(id) {
-      this.notifications = this.notifications.filter(
-        n => n.id !== id
-      )
-    },
-
-    openCreateModal() {
-      this.isCreateModalOpen = true
-    },
-
-    closeCreateModal() {
-      this.isCreateModalOpen = false
-    },
-
-    toggleSidebar() {
-      this.isSidebarOpen = !this.isSidebarOpen
-    },
-
-    toggleTheme() {
-      this.theme = this.theme === 'light' ? 'dark' : 'light'
+  const showNotification = (message, type = 'info') => {
+    const notification = {
+      id: Date.now(),
+      message,
+      type
     }
-  },
-
-  persist: {
-    paths: ['theme']
+    notifications.value.push(notification);
+    setTimeout(() => {
+      removeNotification(notification.id)
+    },25000)
   }
-})
+
+  const removeNotification = (id) => {
+    notifications.value = notifications.value.filter(nontify => nontify.id !== id);
+  }
+
+  const openCreateModal = () => {
+    isCreateModalOpen.value = true;
+  }
+
+  const closeCreateModal = () => {
+    isCreateModalOpen.value = false;
+  }
+
+  return {
+    notifications,
+    isCreateModalOpen,
+    showNotification,
+    removeNotification,
+    openCreateModal,
+    closeCreateModal
+  }
+});
+

@@ -34,7 +34,7 @@
 
         <button
           type="submit"
-          class="w-full px-6 py-3 bg-emerald-500 text-white font-semibold rounded-lg hover:bg-emerald-600 transition">
+          class="w-full px-6 py-3 bg-emerald-500 text-white font-semibold rounded-lg cursor-pointer hover:bg-emerald-600 transition">
           Sign In
         </button>
       </form>
@@ -76,9 +76,9 @@ const ui = computed(() => {
   return uiStore;
 });
 
-const handleLogin = () => {
-  debugger;
-  authStore.login(form.email, form.password, form.isAdmin)
+const handleLogin = async () => {
+  await authStore.login(form.email, form.password, form.isAdmin)
+
   const redirect = route.query.redirect || '/dashboard'
   router.push(redirect)
 }

@@ -1,23 +1,26 @@
 import { defineStore } from 'pinia'
 import { usePostsStore } from './posts'
-import { useUIStore } from './ui'
+import { ref, computed } from 'vue'
 
-export const useAuthStore = defineStore('auth', {
-  state: () => ({
-    user: null,
-    token: null
-  }),
+export const useAuthStore = defineStore('auth', () => {
+  const user = ref(null)
+  const token = ref(null)
+  const loading = ref(false)
+  const error = ref(null)
 
-  getters: {
-    isLoggedIn: (state) => !!state.token,
-    userName: (state) => state.user?.name || 'Guest',
-    userRole: (state) => state.user?.role || 'guest'
-  },
+  const isLoggedIn = computed(() => !!token.value)
+  const userName = computed(() => user.value?.name || 'Guest')
+  const userRole = computed(() => user.value?.role || 'guest')
 
-  actions: {
-    login(email, password, isAdmin) {
-      this.token = 'token-' + Date.now()
-      this.user = {
+  async function login(email, password, isAdmin = false) {
+
+    loading.value = true
+    error.value = null
+
+    try {
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      token.value = 'token-' + Date.now()
+      user.value = {
         id: Date.now(),
         name: email.split('@')[0],
         email,
@@ -25,30 +28,48 @@ export const useAuthStore = defineStore('auth', {
         avatar: email.charAt(0).toUpperCase()
       }
 
-      const postsStore = usePostsStore();
-      postsStore.fetchPosts();
-      const uiStore = useUIStore();
-      uiStore.showNotification('Welcome back!', 'success')
-    },
-
-    logout() {
-      this.user = null
-      this.token = null
-
       const postsStore = usePostsStore()
-      postsStore.clearPosts()
+      postsStore.fetchPosts()
 
-      const uiStore = useUIStore()
-      uiStore.showNotification('Logged out successfully', 'info')
-    },
+      return true
 
-    updateProfile(updates) {
-      if (this.user) {
-        this.user = { ...this.user, ...updates }
-      }
+    } catch (err) {
+      error.value = err.message
+      return false
+
+    } finally {
+      loading.value = false
     }
-  },
+  }
+
+  function logout() {
+    user.value = null
+    token.value = null
+    const postsStore = usePostsStore()
+    postsStore.clearPosts()
+  }
+
+  function updateProfile(updates) {
+    if (user.value) {
+      user.value = { ...user.value, ...updates }
+    }
+  }
+
+  return {
+    user,
+    token,
+    loading,
+    error,
+    isLoggedIn,
+    userName,
+    userRole,
+    login,
+    logout,
+    updateProfile
+  }
+
+}, {
   persist: {
-    paths: ['token', 'user']
+    path: ['token', 'user']
   }
 })

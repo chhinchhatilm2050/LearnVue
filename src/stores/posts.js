@@ -1,157 +1,182 @@
 import { defineStore } from 'pinia'
 import { useAuthStore } from './auth'
 import { useUIStore } from './ui'
+import { ref, computed } from 'vue'
 
-export const usePostsStore = defineStore('posts', {
-  state: () => ({
-    posts: [],
-    currentPost: null,
-    filter: 'all' // 'all', 'my-posts', 'drafts'
-  }),
+export const usePostsStore = defineStore('posts', () => {
+  const posts = ref([])
+  const currentPost = ref(null)
+  const filter = ref('all')
 
-  getters: {
-    filteredPosts() {
-      const authStore = useAuthStore()
-
-      if (this.filter === 'my-posts') {
-        return this.posts.filter(p => p.authorId === authStore.user?.id)
-      }
-      if (this.filter === 'drafts') {
-        return this.posts.filter(p => p.status === 'draft' && p.authorId === authStore.user?.id)
-      }
-      return this.posts.filter(p => p.status === 'published')
-    },
-
-    getPostById: (state) => {
-      return (id) => state.posts.find(p => p.id === id)
-    },
-
-    myPostsCount() {
-      const authStore = useAuthStore()
-      return this.posts.filter(p => p.authorId === authStore.user?.id).length
+  const authStore = useAuthStore()
+  const uiStore = useUIStore()
+  const filteredPosts = computed(() => {
+    const userId = authStore.user?.id;
+    if (filter.value === 'my-posts') {
+      return userId
+        ? posts.value.filter(p => p.authorId === userId)
+        : []
     }
-  },
 
-  actions: {
-    fetchPosts() {
-      if (this.posts.length) return  // ← add this
+    if (filter.value === 'drafts') {
+      return userId
+        ? posts.value.filter(
+            p => p.status === 'draft' && p.authorId === userId
+          )
+        : []
+    }
+    return posts.value.filter(p => p.status === 'published')
+  })
+  const myPostsCount = computed(() => {
+    const userId = authStore.user?.id
+    return userId
+      ? posts.value.filter(p => p.authorId === userId).length
+      : 0
+  })
 
-      this.posts = [
-        {
-          id: 1,
-          title: 'Getting Started with Vue 3',
-          content: 'Vue 3 brings many improvements...',
-          authorId: 1,
-          authorName: 'Admin',
-          status: 'published',
-          createdAt: new Date().toISOString(),
-          likes: 42,
-          comments: []
-        },
-        {
-          id: 2,
-          title: 'Understanding Pinia',
-          content: 'Pinia is the official state management...',
-          authorId: 1,
-          authorName: 'Admin',
-          status: 'published',
-          createdAt: new Date().toISOString(),
-          likes: 38,
-          comments: []
-        }
-      ]
-    },
+  const getPostById = (id) => {
+    return posts.value.find(p => p.id === id)
+  }
 
-    createPost(postData) {
-      const authStore = useAuthStore()
-      const uiStore = useUIStore()
+  const fetchPosts = () => {
+    if (posts.value.length) return
 
-      if (!authStore.isLoggedIn) {
-        uiStore.showNotification('Please login to create posts', 'error')
-        return
-      }
-
-      const newPost = {
-        id: Date.now(),
-        title: postData.title,
-        content: postData.content,
-        authorId: authStore.user.id,
-        authorName: authStore.userName,
-        status: postData.isDraft ? 'draft' : 'published',
+    posts.value = [
+      {
+        id: 1,
+        title: 'Getting Started with Vue 3',
+        content: 'Vue 3 brings many improvements...',
+        authorId: 1,
+        authorName: 'Admin',
+        status: 'published',
         createdAt: new Date().toISOString(),
-        likes: 0,
+        likes: 42,
+        comments: []
+      },
+      {
+        id: 2,
+        title: 'Understanding Pinia',
+        content: 'Pinia is the official state management...',
+        authorId: 1,
+        authorName: 'Admin',
+        status: 'published',
+        createdAt: new Date().toISOString(),
+        likes: 38,
         comments: []
       }
+    ]
+  }
 
-      this.posts.unshift(newPost)
-      uiStore.showNotification('Post created successfully!', 'success')
+  const createPost = (postData) => {
+    if (!authStore.isLoggedIn) {
+      uiStore.showNotification(
+        'Please login to create posts',
+        'error'
+      )
+      return
+    }
 
-      return newPost
-    },
+    const newPost = {
+      id: Date.now(),
+      title: postData.title,
+      content: postData.content,
+      authorId: authStore.user.id,
+      authorName: authStore.userName,
+      status: postData.isDraft ? 'draft' : 'published',
+      createdAt: new Date().toISOString(),
+      likes: 0,
+      comments: []
+    }
 
-    updatePost(id, updates) {
-      const post = this.posts.find(p => p.id === id)
-      if (post) {
-        Object.assign(post, updates)
+    posts.value.unshift(newPost)
 
-        const uiStore = useUIStore()
-        uiStore.showNotification('Post updated', 'success')
-      }
-    },
+    uiStore.showNotification(
+      'Post created successfully!',
+      'success'
+    )
 
-    deletePost(id) {
-      this.posts = this.posts.filter(p => p.id !== id)
+    return newPost
+  }
 
-      const uiStore = useUIStore()
-      uiStore.showNotification('Post deleted', 'info')
-    },
+  const updatePost = (id, updates) => {
+    const post = posts.value.find(p => p.id === id)
 
-    likePost(id) {
-      const authStore = useAuthStore()
-
-      if (!authStore.isLoggedIn) {
-        const uiStore = useUIStore()
-        uiStore.showNotification('Please login to like posts', 'error')
-        return
-      }
-
-      const post = this.posts.find(p => p.id === id)
-      if (post) {
-        post.likes++
-      }
-    },
-
-    addComment(postId, commentText) {
-      const authStore = useAuthStore()
-
-      if (!authStore.isLoggedIn) {
-        const uiStore = useUIStore()
-        uiStore.showNotification('Please login to comment', 'error')
-        return
-      }
-
-      const post = this.posts.find(p => p.id === postId)
-      if (post) {
-        post.comments.push({
-          id: Date.now(),
-          authorName: authStore.userName,
-          text: commentText,
-          createdAt: new Date().toISOString()
-        })
-      }
-    },
-
-    setFilter(filter) {
-      this.filter = filter
-    },
-
-    clearPosts() {
-      this.posts = []
-      this.currentPost = null
+    if (post) {
+      Object.assign(post, updates)
+      uiStore.showNotification('Post updated', 'success')
     }
   }
-}, {
+
+  const deletePost = (id) => {
+    posts.value = posts.value.filter(p => p.id !== id)
+    uiStore.showNotification('Post was deleted!', 'error')
+  }
+
+  const likePost = (id) => {
+    if (!authStore.isLoggedIn) {
+      uiStore.showNotification(
+        'Please login to like posts',
+        'error'
+      )
+      return
+    }
+
+    const post = posts.value.find(p => p.id === id)
+
+    if (post) {
+      post.likes++
+    }
+  }
+
+  const addComment = (postId, commentText) => {
+    if (!authStore.isLoggedIn) {
+      uiStore.showNotification(
+        'Please login to comment',
+        'error'
+      )
+      return
+    }
+
+    const post = posts.value.find(p => p.id === postId)
+
+    if (post) {
+      post.comments.push({
+        id: Date.now(),
+        authorName: authStore.userName,
+        text: commentText,
+        createdAt: new Date().toISOString()
+      })
+    }
+  }
+  const setFilter = (newFilter) => {
+    filter.value = newFilter
+  }
+
+  const clearPosts = () => {
+    posts.value = []
+    currentPost.value = null
+  }
+
+  return {
+    posts,
+    currentPost,
+    filter,
+    filteredPosts,
+    myPostsCount,
+    getPostById,
+    fetchPosts,
+    createPost,
+    updatePost,
+    deletePost,
+    likePost,
+    addComment,
+    setFilter,
+    clearPosts
+  }
+},
+{
   persist: {
     paths: ['posts']
   }
-})
+}
+)
